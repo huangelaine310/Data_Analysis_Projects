@@ -1,0 +1,188 @@
+body {
+    background-color: rgba(255, 248, 220, 0.2);
+    font-family: 'Merriweather';
+    padding: 0;
+    margin: 0;
+}
+
+header{
+  padding-top: 4%;
+  position: relative;
+  min-width: 1200px;
+  min-height: 470px;
+  width: 100vw;
+  height: 39.1vw;
+  /* image credit: https://pre00.deviantart.net/925c/th/pre/f/2010/067/7/e/usa_flag_grunge_wallpaper_by_the_proffesional.jpg */
+  background:url("imageedit_1_2842717085.jpg");
+  background-size: cover;
+  /* background-position: center; */
+  background-color: rgba(0, 0, 255,.2);
+  background-blend-mode: screen;
+}
+h1 {
+  font-family: 'Yeseva One', sans-serif;
+  font-size: 148px;
+  color: #fff;
+  stroke: red;
+  stroke-width: 4;
+  text-align: center;
+  margin-top: 0;
+  line-height: 1;
+}
+h2{
+  position: absolute;
+  font-family: 'Merriweather';
+  font-size: 46px;
+  text-align: center;
+  color: #fff;
+  stroke-width: 2;
+  bottom: 0;
+  right: 0.5%;
+  left: 0.5%;
+}
+h3 {
+  color: rgb(80,80,80);
+  text-align: center;
+  font-size: 250%;
+  padding-top: 36;
+}
+
+h4 {
+  font-size: 350%;
+  color: rgb(80,80,80);
+  text-align: center;
+  font-family: 'Yeseva One', sans-serif !important;;
+  line-height: 0;
+  padding-bottom: 0
+}
+
+#container {
+    justify-content: center;
+    width: 100%;
+    min-width: 1200px;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+}
+
+/* resource: https://stackoverflow.com/questions/29503227/how-to-make-flexbox-items-the-same-size */
+.item {
+    display: block;
+    min-width: 800px;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    justify-content: center;
+    padding: 10%;
+    padding-bottom: 0;
+}
+
+
+#title {
+    text-align: center;
+    min-width: 600px;
+    min-height: 300px;
+}
+
+#flag {
+    width: 98%;
+    height: auto;
+    left: 80%;
+    top: 50%;
+    overflow: hidden;
+}
+
+.titletext {
+    font-size: 475%;
+    width: 100%;
+    min-width: 550px;
+    min-height: 83px;
+}
+
+#titlerect {
+    height: 100%;
+    width: 100%;
+}
+
+
+#subtitle {
+    font-size: 130%;
+}
+
+#svgbox {
+    width: 100%;
+    padding-top: 75%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    resize: none;
+}
+
+#car {
+    height: 30%;
+    min-height: 180px;
+    max-height: 250px;
+    justify-content: flex-end;
+}
+
+.bundle {
+    padding-bottom: 5%;
+}
+
+#banner {
+    text-align: right;
+    justify-content: flex-end;
+    align-content: flex-end;
+    width: 80%;
+    position: relative;
+}
+
+.graphtitle {
+    text-align: center;
+    font-size: 160%;
+    margin-bottom: 0;
+}
+
+
+#Pop {
+    justify-content: center;
+
+}
+
+/* resource: http://www.mademyday.de/css-height-equals-width-with-pure-css.html */
+#svgPop {
+    justify-content: center;
+    width: 100%;
+    padding-top: 75%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    resize: none;
+}
+
+#mapPop, #boxplots {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.mapdescription {
+    font-size: 3px;
+    font-family: "Merriweather";
+    width: 100%;
+    /* padding-left: 5%;
+    padding-right: 5%; */
+    font-size: 100%;
+    text-align: left;
+
+}
+
+#svgRace {
+    padding-top: 3%;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    resize: none;
+}

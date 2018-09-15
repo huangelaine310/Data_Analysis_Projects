@@ -1,0 +1,317 @@
+
+/*Color Scheme Variables*/
+
+:root {
+  --main-bg-color: #F8EEE7;
+  --text-color: #18121E;
+  --leftContainer-bg-color: transparent;
+  --mainTitle-bg-color: transparent;
+  --sliderContainerDiv-bg-color: transparent;
+  --sliderTitleDiv-bg-color: transparent;
+  --sliderInputContainerDiv-bg-color: transparent;
+  --wordChartContainerDiv-bg-color: transparent;
+  --wordChartSvg-bg-color: transparent;
+  --rightContainerDiv-bg-color: transparent;
+  --ratingTitleDiv-bg-color: transparent;
+  --histContainer-bg-color: transparent;
+  --ratingsHistogram-bg-color: transparent;
+  --average_rating-bg-color: transparent;
+  --genreTitleDiv-bg-color: transparent;
+  --genreContainerDiv-bg-color: transparent;
+  --genreContainer-bg-color: transparent;
+  --genreChart-bg-color: transparent;
+}
+
+/* Styling for hover */
+/* Source: https://stackoverflow.com/questions/10805184/show-data-on-mouseover-of-circle */
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
+
+body {
+	font-family: 'Open Sans', serif;
+	background-color: var(--main-bg-color);
+	font-weight: 300;
+  color: var(--text-color);
+}
+
+
+#mainContainer {
+display: inline-flex;
+}
+
+#leftContainerDiv {
+  background-color: var(--leftContainer-bg-color);
+  height: 50vw;
+  width: 60vw;
+  float: left;
+  margin: 0;
+  padding: 0;
+}
+
+
+#titleContainerDiv {
+  background-color: var(--mainTitle-bg-color);
+  height: 10%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#mainTitle {
+  margin: 0;
+  padding: 0;
+
+}
+
+#subTitle {
+  margin: 0;
+  padding: 0;
+  padding-top: 0.5em;
+
+}
+
+#sliderContainerDiv {
+  background-color: var(--sliderContainerDiv-bg-color);
+  margin: 0;
+  padding: 0;
+  height: 90%;
+  width: 15%;
+  float: left;
+  display: inline-block;
+}
+
+#sliderTitleDiv {
+  background-color: var(--sliderTitleDiv-bg-color);
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  float: left;
+  display: inline-block;
+}
+
+#sliderTitleDiv #sliderTitle {
+    margin: 0;
+}
+
+#sliderInputContainerDiv {
+  background-color: var(--sliderInputContainerDiv-bg-color);
+  margin: 0;
+  padding: 0;
+  height: 75%;
+  width: 100%;
+  margin-left: -40px;
+  display: inline-block;
+  align-items: center;
+}
+
+#sliderInputContainerDiv #ratingabove{
+    margin: 0;
+    padding-left: 0;
+    width: 100%;
+    text-align: right;
+    margin-top: 30px;
+}
+
+#sliderInputContainerDiv #slidecontainer {
+  align-items: center;
+  margin: 0;
+}
+
+#ratingSlider {
+  margin-left: 0;
+  transform: rotate(270deg);
+  margin: 0;
+  margin-top: 100%;
+  background: linear-gradient(to right, #984B43, #EAC67A);
+  -webkit-appearance: none;
+    height: 15px;
+    width: 200px;
+    border-radius: 5px;
+    outline: none;
+
+}
+
+#ratingabove {
+  padding-left: 80px;
+  width: 50px;
+  text-align: right;
+  /* float:left; */
+  /* display: inline-block; */
+}
+
+#wordChartContainerDiv {
+  background-color: var(--wordChartContainerDiv-bg-color);
+  margin: 0;
+  padding: 0;
+  height: 90%;
+  width: 85%;
+  float: left;
+  display: inline-block;
+}
+
+#wordChartSvg {
+  background-color: var(--wordChartSvg-bg-color);
+  margin: 0;
+  padding: 0;
+}
+
+#rightContainerDiv {
+  background-color: var(--rightContainerDiv-bg-color);
+  height: 50vw;
+  width: 38.5vw;
+  float: left;
+  margin: 0;
+  padding: 0;
+}
+
+#ratingTitleDiv {
+  background-color: var(--ratingTitleDiv-bg-color);
+  margin: 0;
+  padding: 0;
+  height: 10%;
+  width: 100%;
+  float: left;
+  display: inline-block;
+}
+
+#histContainer {
+  background-color: var(--histContainer-bg-color);
+  margin: 0;
+  padding: 0;
+  height: 30%;
+  width: 80%;
+  float: left;
+  display: inline-block;
+}
+
+#ratingsHistogram {
+  background-color: var(--ratingsHistogram-bg-color);
+  margin: 0;
+  padding: 0;
+  height: 90%;
+  width: 100%;
+  float: left;
+  display: inline-block;
+
+}
+
+#average_rating {
+  background-color: var(--average_rating-bg-color);
+  margin: 0;
+  margin-left: 14%;
+  padding: 0;
+  height: 10%;
+  width: 100%;
+  float: left;
+  display: inline-block;
+}
+
+#genreTitleDiv {
+  background-color: var(--genreTitleDiv-bg-color);
+  margin: 0;
+  padding: 0;
+  height: 5%;
+  width: 100%;
+  float: left;
+  display: inline-block;
+}
+
+#genreContainerDiv {
+  background-color: var(--genreContainerDiv-bg-color);
+  margin: 0;
+  padding: 0;
+  height: 40%;
+  width: 100%;
+  float: left;
+  display: inline-block;
+}
+
+#genreContainer {
+    display: inline-block;
+    background-color: var(--genreContainer-bg-color);
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.genreChart  {
+  width: 50vw;
+  height: 22vw;
+  background-color: var(--genreChart-bg-color);
+  display: inline-block;
+  margin-left: -150px;
+  padding: 0;
+
+}
+
+#svg_genre {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#putGenreSvgHere {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.allSmallTitles {
+  margin: 0;
+  padding: 0;
+  margin-top: 20px;
+  color: var(--text-color);
+  margin-left: 180px;
+}
+
+#ratingTitle {
+  margin-top: 50px;
+}
+
+#titleDivs {
+  margin: 0;
+  padding: 0;
+  padding-top: 10px;
+  text-align: center;
+  margin-top: 50px;
+}
+
+#sliderTitleDiv {
+  margin-top: 40px;
+  text-align: center;
+}
+
+#sliderTitle {
+  margin-left: 60px;
+  color: var(--text-color);
+}

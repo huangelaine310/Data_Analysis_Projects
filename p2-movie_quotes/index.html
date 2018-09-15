@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+	<head>
+	<meta charset="utf-8">
+	<title>Film Dialogue</title>
+	<link rel="stylesheet" type="text/css" href="styles/main.css">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet">
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+    <!-- load data -->
+    <script src="scripts/loaddata.js"></script>
+		<script src="scripts/hover.js"></script>
+
+	</head>
+	<body>
+		<div id="mainContainer">
+			<div id="leftContainerDiv">
+				<div id="titleContainerDiv" class="titleDivs">
+					<h2 id="mainTitle">Overused Dialogue in Film</h2>
+					<p id="subTitle">Click a line of dialogue to see the ratings and
+						genres of the movies that use it. While films with cliched dialogue
+						span across genres, they tend to have mid-level ratings.</p>
+				</div>
+				<div id="sliderContainerDiv">
+					<div id="sliderTitleDiv" class="titleDivs">
+						<h4 id="sliderTitle">Filter By Average Movie Rating</h4>
+					</div>
+					<div id="sliderInputContainerDiv">
+						<div id = "ratingabove">Rating: 0</div>
+						<div id="slidecontainer">
+							  <input type="range" min="0" max="10" step="0.1" value="0" id="ratingSlider">
+						</div>
+					</div>
+				</div>
+				<div id="wordChartContainerDiv">
+					<div id="wordChart">
+	          			<svg id="wordChartSvg"></svg>
+	      			</div>
+				</div>
+			</div>
+			<div id="rightContainerDiv">
+				<div id="ratingTitleDiv" class="titleDivs">
+					<h4 class="allSmallTitles" id = "ratingTitle">Usage in Movies By iMBD Rating</h4>
+
+				</div>
+				<div id="histContainer">
+					<div class="ratingsHistogram" id="ratingsHistogram">
+		            	<svg id="histograph"></svg>
+		          		<div id="average_rating"></div>
+	        		</div>
+				</div>
+				<div id="genreTitleDiv" class="titleDivs">
+					<h4 class="allSmallTitles" id = "genreTitle">Usage in Movies By Genre</h4>
+				</div>
+				<div id="genreContainerDiv">
+					<div id="genreContainer">
+						<div class="genreChart" id="putGenreSvgHere"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!---  Scripts only below this line --->
+		<script src="scripts/bubbles.js"></script>
+		<script src="scripts/genreChart.js"></script>
+    	<script src="scripts/histogram.js"></script>
+	    <script>
+	        //slider listener
+	        var slider = document.getElementById("ratingSlider");
+	        slider.oninput = function() {
+	            var new_quote_data = [];
+	            quote_data.forEach(function(d) {
+	                if (d.average_rating >= slider.value)
+	                    new_quote_data.push(d);
+	            });
+	            bubbles(new_quote_data);
+							console.log("hey");
+	            document.getElementById("ratingabove").innerHTML = "Rating: " + slider.value;
+	        }
+
+	    </script>
+	</body>
+</html>

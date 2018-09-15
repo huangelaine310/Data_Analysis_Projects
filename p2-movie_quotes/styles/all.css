@@ -1,0 +1,27 @@
+body {
+  font-family: 'Raleway', sans-serif;
+}
+
+h1 {
+  text-align: center;
+}
+
+#main_plot {
+  border: 1px solid #dee2e8;
+  width: 700px;
+  float: right;
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+
+#rating {
+  /* margin-left: 20px; */
+  margin-top: 50px;
+  text-align: center;
+}
+#rating_slider {
+  /* position: absolute; */
+  top: 100%;
+  margin-top: 70px;
+  transform: rotate(270deg);
+}

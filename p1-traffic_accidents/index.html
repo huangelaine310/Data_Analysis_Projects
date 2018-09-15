@@ -1,0 +1,768 @@
+<head>
+    <link rel="stylesheet" href="main.css">
+    <link href="https://fonts.googleapis.com/css?family=Merriweather" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Yeseva+One" />
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="http://d3js.org/topojson.v2.min.js"></script>
+    <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+</head>
+<div id="container">
+
+<!-- <div id="titlediv" class="item">
+    <svg width="100%" height="35%" id="title">
+      <defs>
+        Pattern reference https://css-tricks.com/how-to-do-knockout-text/ for the pattern
+        <pattern id="img1" patternUnits="userSpaceOnUse" width="100%" height="100%">
+          <image id="flag" xlink:href="usa_flag_grunge_wallpaper_by_the_proffesional.jpg"width="100%" height="100%"/>
+        </pattern>
+      </defs>
+
+      Mask reference https://css-tricks.com/snippets/svg/svg-knockout-text/ for the mask (<rect class> on)
+        <rect id="titlerect" fill="url(#img1)" fill-opacity="1" mask="url(#knockout-text)" />
+        <mask width="100%" id="knockout-text" font-family="Yeseva One">
+         <text class="titletext" x="50%" y="30%" fill="#f9f" stroke="#ddd" stroke-width="1" text-anchor="middle">United States</text>
+         <text class="titletext" x="50%" y="60%" fill="#f9f" stroke="#ddd" stroke-width="1" text-anchor="middle">of Accidents</text>
+        </mask>
+        <text id="subtitle" x="50%" y="80%" text-anchor="middle" font-family="Merriweather">
+            An Exploration of Drunk Driving Fatalities in 2015
+        </text>
+        <text id="author" x="50%" y="90%" text-anchor="middle" font-family="Merriweather">
+            Elaine Hwang(yh467), Isabel Siergiej(is278), and Zachary Roga(zr39)
+        </text>
+    </svg>
+</div> -->
+<header>
+<h1>United States<br>of Accidents</h1>
+<h2>An Exploration of Drunk Driving Fatalities in 2015</h2>
+</header>
+<div width="100%" id="box" class="item">
+    <h3>[ WHEN? ]</h3>
+    <h4 font-family="Yeseva One" class="graphtitle">
+         Rates of Fatal Crashes with Alcohol Involvement
+    </h4>
+    <div id="svgbox">
+    <svg id="boxplots" transform="scale(0.9)"></svg>
+    </div>
+    <div font-size="50%" class="mapdescription">
+         Chronological points represent daily frequencies of fatal accidents with drunk driving.  Boxplots aggregate monthly statistics.  The highest number of fatal crashes occurred on May 5, the lowest February 11.
+    </div>
+</div>
+
+<div id="Pop" class="item">
+    <h3>[ WHERE? ]</h3>
+    <h4 font-family="Merriweather" id="PopTitle" class="graphtitle">Rate of Fatal Accidents involving Drunk Drivers per Million People</h4>
+    <div id="svgPop">
+        <svg id="mapPop"></svg>
+    </div>
+    <div id="PopDescription" class="mapdescription">
+        This map shows the number of fatal accidents involving driver drinking, per million people in each state.  Regional trends emerge from this view: prominent clusters suggest similar rates across some neighboring states.
+    </div>
+</div>
+
+<div id="Race" class="item">
+    <h3>[ WHO? ]</h3>
+    <h4 id="RaceTitle" class="graphtitle">Demographic View of Driver Fatalities due to Alcohol</h4>
+    <div id="svgRace">
+        <svg id="raceplot"></svg>
+    </div>
+    <div id="raceDescription" class="mapdescription">
+        This graph shows the relative occurrence of alcohol impairment in drivers killed in accidents, by race, gender, and age.
+    </div>
+</div>
+
+<div id="banner" class="item">
+    <svg class="bundle"></svg>
+    <svg class="bundle"></svg>
+    <svg class="bundle"></svg>
+    <!-- https://pngtree.com/freepng/healthcare-banner-creative-graffiti_123828.html -->
+    <img id="car" src="image/car.png">
+</div>
+</div>
+<script> window.onresize = function(){ location.reload(); } </script>
+
+<script>
+    var svgBox = d3.select("#boxplots");
+
+    var parseRow = function(row) {
+      return row;
+    }
+
+
+
+        d3.queue()
+        .defer(d3.csv, "DateLines.csv", parseRow)
+        .defer(d3.csv, "FiveNums.csv", parseRow)
+        .await(callbackForBox);
+
+        var widthBox = document.getElementById("svgbox").clientWidth;
+        var heightBox = document.getElementById("svgbox").clientHeight;
+
+        svgBox
+        .attr("width", widthBox)
+        .attr("height", heightBox);
+
+        var xScaleBox = d3.scaleTime().domain([new Date(2015, 0, 1), new Date(2015, 11, 31)]).range([0.1*widthBox, 0.9*widthBox]);
+        var yScaleBox = d3.scaleLinear().domain([0, 67]).range([0.9*heightBox, 0.2*heightBox]);
+
+        //draw axis
+        svgBox.append("line")
+        .attr("x1", xScaleBox(new Date(2015, 0, -1)))
+        .attr("x2", xScaleBox(new Date(2015, 11, 32)))
+        .attr("y1", yScaleBox(0))
+        .attr("y2", yScaleBox(0))
+        .attr("stroke", "black")
+        .attr("stroke-width", 2);
+
+        svgBox.append("line")
+        .attr("x1", xScaleBox(new Date(2015, 0, -1)))
+        .attr("x2", xScaleBox(new Date(2015, 0, -1)))
+        .attr("y1", yScaleBox(0))
+        .attr("y2", yScaleBox(68))
+        .attr("stroke", "black")
+        .attr("stroke-width", 2)
+
+        //label for y-axis
+        //resource: https://stackoverflow.com/questions/31469134/how-to-display-multiple-lines-of-text-in-svg
+        svgBox.append("text")
+        .attr("id", "ylabel")
+        .attr("x", xScaleBox(new Date(2015, 0, -1)))
+        .attr("y", yScaleBox(80))
+        .attr("text-anchor", "middle")
+        .attr("font-size", 18)
+        .attr("dy", 0);
+
+        var text = d3.select("#ylabel");
+
+        text.append("tspan")
+        .text("Number of")
+        .attr("dy", "2.4em")
+        .attr("x", xScaleBox(new Date(2015, 0, -1)));
+
+        text.append("tspan")
+        .text("drunk driving")
+        .attr("dy", "1.2em")
+        .attr("x", xScaleBox(new Date(2015, 0, -1)));
+
+        text.append("tspan")
+        .text("fatal crashes")
+        .attr("dy", "1.2em")
+        .attr("x", xScaleBox(new Date(2015, 0, -1)));
+
+        for (var i = 0; i < 14; i++){
+          svgBox.append("line")
+          .attr("x1", xScaleBox(new Date(2015, 0, -4)))
+          .attr("x2", xScaleBox(new Date(2015, 0, -1)))
+          .attr("y1", yScaleBox(i*5))
+          .attr("y2", yScaleBox(i*5))
+          .attr("stroke", "black")
+          .attr("stroke-width", 1.5);
+
+          if (i % 2 == 0){
+          svgBox.append("text")
+          .attr("x", xScaleBox(new Date(2015, 0, -18)))
+          .attr("y", yScaleBox(i*5 - 1))
+          .attr("fill", "black")
+          .attr("font-size", "20px")
+          .attr("font-family", "Merriweather")
+          .text(i*5)
+        }
+      }
+        var days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        for (var i = 0; i < 12; i++){
+          svgBox.append("text")
+          .attr("x", xScaleBox(new Date(2015, i, days[i] / 2)))
+          .attr("y", yScaleBox(- 5))
+          .attr("fill", "black")
+          .attr("font-size", "18px")
+          .attr("text-anchor", "middle")
+          .attr("font-family", "Merriweather")
+          .text(months[i]);
+        }
+
+
+        function callbackForBox(error, rawData, fivesData) {
+            showPoints(xScaleBox, yScaleBox, fivesData, rawData);
+            showBox(xScaleBox, yScaleBox, fivesData);
+            showLegend(xScaleBox, yScaleBox, fivesData, rawData);
+        }
+        var ptdata;
+        function showPoints(xscale, yscale, fivesdata, pointdata) {
+          var circles = svgBox.selectAll("circle")
+          .data(pointdata);
+
+          ptdata = (pointdata);
+
+          circles = circles.enter().append("circle")
+          .attr("r", 3).attr("opacity", 1)
+          .merge(circles);
+
+          circles
+          .attr("cx", d => xscale(new Date(2015, d.MONTH - 1, d.DAY)))
+          .attr("cy", d => yscale(d.DRUNK_DR))
+          .attr("id", d => (d.MONTH + d.DAY))
+          .attr("fill", d => (d.DRUNK_DR == 7 || d.DRUNK_DR == 66) ? "rgb(255,100,100)" : "#F4C2C2");
+        }
+        function showLegend(xscale, yscale, fivesdata, pointdata){
+          d3.select("#boxplots")
+            .append("g").attr("id", "box_legend");
+          var bx_lgd = d3.select("#box_legend");
+                var rect_width = (xscale(new Date(2015, 1, 25)) - xscale(new Date(2015, 1, 1)));
+                var boxPlotWidth= xscale(new Date(2015, 12, 15));
+                var font_sz = "" + rect_width / 4 + "px";
+                bx_lgd.append("rect")
+                .attr("id", "legendBounds")
+                .attr("x", xscale(new Date(2015, 10, 14)))
+                .attr("y", yscale(67))
+                .attr("width", 3.6*rect_width)
+                .attr("height", 2.5*rect_width)
+                .attr("fill-opacity", 0)
+                .style("stroke", "gray")
+                .attr("stroke-width", 2);
+
+                bx_lgd.append("text")
+                .attr("x", xscale(new Date(2015, 10, 15)))
+                .attr("y", yscale(65))
+                .style("font-size", font_sz)
+                .text("Daily:")
+                bx_lgd.append("circle")
+                .attr("cx",xscale(new Date(2015, 10, 24)))
+                .attr("cy",yscale(63))
+                .attr("r", 6).attr("opacity", 1)
+                .attr("id", "legend")
+                .attr("fill", "#F4C2C2");
+                bx_lgd.append("text")
+                .attr("x", xscale(new Date(2015, 11, 10)))
+                .attr("y", yscale(65))
+                .style("font-size", font_sz)
+                .text("Monthly statistics:")
+
+                bx_lgd.append("text")
+                .attr("x", boxPlotWidth)
+                .attr("y", yscale(62.5))
+                .style("font-size", font_sz)
+                .text("max")
+                bx_lgd.append("text")
+                .attr("x", boxPlotWidth)
+                .attr("y", yscale(59.5))
+                .style("font-size", font_sz)
+                .text("q3")
+                bx_lgd.append("text")
+                .attr("x", boxPlotWidth)
+                .attr("y", yscale(56.5))
+                .style("font-size", font_sz)
+                .text("median")
+                bx_lgd.append("text")
+                .attr("x", boxPlotWidth)
+                .attr("y", yscale(53.5))
+                .style("font-size", font_sz)
+                .text("q1")
+                bx_lgd.append("text")
+                .attr("x", boxPlotWidth)
+                .attr("y", yscale(50.5))
+                .style("font-size", font_sz)
+                .text("min")
+
+                bx_lgd.append("rect")
+                .attr("id", "legendbox")
+                .attr("x", xscale(new Date(2015, 11, 15)))
+                .attr("y", yscale(60))
+                .attr("width", rect_width)
+                .attr("height", yscale(52)-yscale(55))
+                .attr("fill", "rgb(179, 179, 255)")
+                .attr("fill-opacity", 0.3)
+                .attr("stroke", "rgb(0, 0, 255)")
+                .attr("stroke-width", 2)
+                .attr("stroke-opacity", 0.7);
+                bx_lgd.append("rect")
+                .attr("id", "legendbox2")
+                .attr("x", xscale(new Date(2015, 11, 15)))
+                .attr("y", yscale(57))
+                .attr("width", rect_width)
+                .attr("height", yscale(52)-yscale(55))
+                .attr("fill", "rgb(179, 179, 255)")
+                .attr("fill-opacity", 0.3)
+                .attr("stroke", "rgb(0, 0, 255)")
+                .attr("stroke-width", 2)
+                .attr("stroke-opacity", 0.7);
+                bx_lgd.append("line")
+                .attr("x1",xscale(new Date(2015, 11, 15))+rect_width/2)
+                .attr("y1", yscale(60))
+                .attr("y2", yscale(63))
+                .attr("x2", xscale(new Date(2015, 11, 15))+rect_width/2)
+                .style("stroke", "rgb(0,0,255")
+                .attr("stroke-width",2)
+                .attr("stroke-opacity", 0.7);
+                bx_lgd.append("line")
+                .attr("x1",xscale(new Date(2015, 11, 15))+rect_width/2)
+                .attr("y1", yscale(51))
+                .attr("y2", yscale(54))
+                .attr("x2", xscale(new Date(2015, 11, 15))+rect_width/2)
+                .style("stroke", "rgb(0,0,255")
+                .attr("stroke-width",2)
+                .attr("stroke-opacity", 0.7);
+                bx_lgd.append("line")
+                .attr("x1",xscale(new Date(2015, 11, 15))+rect_width/4)
+                .attr("y1", yscale(51))
+                .attr("y2", yscale(51))
+                .attr("x2", xscale(new Date(2015, 11, 15))+3*rect_width/4)
+                .style("stroke", "rgb(0,0,255")
+                .attr("stroke-width",2)
+                .attr("stroke-opacity", 0.7);
+                bx_lgd.append("line")
+                .attr("x1",xscale(new Date(2015, 11, 15))+rect_width/4 )
+                .attr("y1", yscale(63))
+                .attr("y2", yscale(63))
+                .attr("x2", xscale(new Date(2015, 11, 15))+3*rect_width/4)
+                .style("stroke", "rgb(0,0,255")
+                .attr("stroke-width",2)
+                .attr("stroke-opacity", 0.7);
+
+                var translate_x = -0.5 * xscale(new Date(2015,0,1));
+                var translate_y = -1 * yscale(80);
+                bx_lgd.attr("transform", "translate(" + translate_x + "," + translate_y + ")");
+
+        }
+        function showBox(xscale, yscale, fivesData) {
+          for (var i = 0; i < 12; i++) {
+                var numdays = days[i]
+                rect_width = xscale(new Date(2015, 0, numdays - 2.5)) - xscale(new Date(2015, 0, 2.5));
+                rect_height =  yscale(0) - yscale(fivesData[i].V4 - fivesData[i].V2);
+
+                svgBox.append("rect")
+                .attr("x", xscale(new Date(2015, i, 3)))
+                .attr("y", yscale(fivesData[i].V4))
+                .attr("width", rect_width)
+                .attr("height", rect_height)
+                .attr("fill", "rgb(179, 179, 255)")
+                .attr("fill-opacity", 0.3);
+
+                svgBox.append("rect")
+                .attr("x", xscale(new Date(2015, i, 3)))
+                .attr("y", yscale(fivesData[i].V4))
+                .attr("width", rect_width)
+                .attr("height", 2)
+                .attr("fill", "rgb(77, 77, 255)")
+                .attr("fill-opacity", 0.7);
+
+                svgBox.append("rect")
+                .attr("x", xscale(new Date(2015, i, 3)))
+                .attr("y", yscale(fivesData[i].V3))
+                .attr("width", rect_width)
+                .attr("height", 2)
+                .attr("fill", "rgb(77, 77, 255)")
+                .attr("fill-opacity", 0.7);
+
+                svgBox.append("rect")
+                .attr("x", xscale(new Date(2015, i, 3)))
+                .attr("y", yscale(fivesData[i].V2))
+                .attr("width", rect_width)
+                .attr("height", 2)
+                .attr("fill", "rgb(77, 77, 255)")
+                .attr("fill-opacity", 0.7);
+
+                svgBox.append("rect")
+                .attr("x", xscale(new Date(2015, i, 3)))
+                .attr("y", yscale(fivesData[i].V4))
+                .attr("width", 2)
+                .attr("height", rect_height)
+                .attr("fill", "rgb(77, 77, 255)")
+                .attr("fill-opacity", 0.7);
+
+                svgBox.append("rect")
+                .attr("x", xscale(new Date(2015, i, 3)) + rect_width - 2)
+                .attr("y", yscale(fivesData[i].V4))
+                .attr("width", 2)
+                .attr("height", rect_height)
+                .attr("fill", "rgb(77, 77, 255)")
+                .attr("fill-opacity", 0.7);
+
+                svgBox.append("rect")
+                .attr("x", xscale(new Date(2015, i, 2 + numdays / 4)))
+                .attr("y", yscale(fivesData[i].V5))
+                .attr("width", rect_width / 2)
+                .attr("height", 2)
+                .attr("fill", "rgb(77, 77, 255)")
+                .attr("fill-opacity", 0.7);
+
+                svgBox.append("rect")
+                .attr("x", xscale(new Date(2015, i, 2 + numdays / 4)))
+                .attr("y", yscale(fivesData[i].V1))
+                .attr("width", rect_width / 2)
+                .attr("height", 2)
+                .attr("fill", "rgb(77, 77, 255)")
+                .attr("fill-opacity", 0.7);
+
+                svgBox.append("rect")
+                .attr("x", xscale(new Date(2015, i, numdays / 2)))
+                .attr("y", yscale(fivesData[i].V5))
+                .attr("width", 2)
+                .attr("height", yscale(0) - yscale(fivesData[i].V5 - fivesData[i].V4))
+                .attr("fill", "rgb(77, 77, 255)")
+                .attr("fill-opacity", 0.7);
+
+                svgBox.append("rect")
+                .attr("x", xscale(new Date(2015, i, numdays / 2)))
+                .attr("y", yscale(fivesData[i].V2))
+                .attr("width", 2)
+                .attr("height", yscale(0) - yscale(fivesData[i].V2 - fivesData[i].V1))
+                .attr("fill", "rgb(77, 77, 255)")
+                .attr("fill-opacity", 0.7);
+            }
+        }
+
+        // Reference: http://d3-annotation.susielu.com
+        const boxAnnotations = [
+          {
+            note: {
+              label: "7 (Feb 11)",
+              title: "2015 min"
+            },
+            x: xScaleBox(new Date(2015, 1, 11)),
+            y: yScaleBox(7),
+            dy: -400,
+            dx: 10
+          },{note: {
+            label: "66 (May 3)",
+            title: "2015 max"
+          },
+          x: xScaleBox(new Date(2015, 4, 3)),
+          y: yScaleBox(66),
+          dy: -30,
+          dx: 80
+        }].map(function(d){ d.color = "rgb(255,100,100)"; return d})
+
+        const makeAnnotations = d3.annotation()
+          .type(d3.annotationCallout)
+          .annotations(boxAnnotations)
+        document.fonts.ready.then(function(){
+          d3.select("#boxplots")
+            .append("g")
+            .attr("class", "annotation-group")
+            .style("font-size", "130%")
+            .call(makeAnnotations)
+        });
+
+
+
+</script>
+
+<script>
+    var svgPop = d3.select("#mapPop");
+    var projection = d3.geoAlbersUsa().scale(75);
+    var pathGenerator = d3.geoPath().projection(projection);
+
+    /*Color Reference: http://www.pimptrizkit.com/?t=20%20Shades */
+    var redsequentialColors = ["rgb(255, 255, 255)", "rgb(255, 179, 179)", "rgb(255, 102, 102)", "rgb(204, 26, 26)", "rgb(153, 0, 0)"];
+    var bluesequentialColors = ['rgb(230, 230, 255)','rgb(153, 153, 255)','rgb(77, 77, 255)','rgb(0, 0, 255)','rgb(0, 0, 102)'];
+
+
+    var percentScale = d3.scaleLinear().domain([0.4027402, 1.991375, 4.297711, 6.685948, 39.8618340]).range(bluesequentialColors);
+    var NoPopScale = d3.scaleLinear().domain([5, 68, 124, 222, 798]).range(redsequentialColors);
+
+    var counties, states;
+    var drunkAtlas;
+
+    var parseRow = function(row) {
+      return row;
+    }
+
+        d3.queue()
+        .defer(d3.json, "us.json")
+        .defer(d3.csv, "NumDrunkState.csv", parseRow)
+        .await(callback);
+
+        function callback(error, rawMap, rawDrunk) {
+            drunkAtlas = d3.map(rawDrunk, function(d) {
+                return Number(d.STATE);
+            });
+            counties = topojson.feature(rawMap, rawMap.objects.counties);
+            states = topojson.feature(rawMap, rawMap.objects.states);
+
+            showMap(percentScale, "DrunkNum", "TotalPopEst2015", svgPop, 1);
+        }
+
+        function showMap(scale, DrunkNum, population, svg, pop) {
+            var width;
+            var height;
+            if (pop == 0) {
+                //no pop
+                width = document.getElementById("svgNoPop").clientWidth;
+                height = document.getElementById("svgNoPop").clientHeight;
+
+                svg
+                .attr("width", width)
+                .attr("height", height);
+            } else {
+                //pop
+                width = document.getElementById("svgPop").clientWidth;
+                height = document.getElementById("svgPop").clientHeight;
+
+                svg
+                .attr("width", width)
+                .attr("height", height);
+            }
+
+            projection.fitExtent([[0,0], [svg.attr("width"), svg.attr("height")]], states);
+            pathGenerator = d3.geoPath().projection(projection);
+
+            var paths = svg.selectAll("path.country").data(states.features);
+
+            paths = paths.enter().append("path").attr("class", "country")
+            .merge(paths);
+
+            paths
+            .transition().duration(1000)
+            .style("fill", function (state) {
+                var stateData = drunkAtlas.get(state.id);
+                if (stateData) {
+                    if (pop == 0) return scale(stateData[DrunkNum]);
+                    else return scale(stateData[DrunkNum]/stateData[population] * 1000000);
+                }
+            })
+            .style("fill-opacity", 0.7)
+            .attr("d", function (state) {
+                return pathGenerator(state);
+            });
+
+            // https://www.visualcinnamon.com/2016/05/smooth-color-legend-d3-svg-gradient.html
+            var defs = svg.append("defs");
+            var linearGradient;
+            if (pop == 0) {
+                //no pop
+                linearGradient = defs.append("linearGradient")
+                .attr("id", "linear-gradientRed");
+                linearGradient
+                .attr("x1", "0%")
+                .attr("y1", "0%")
+                .attr("x2", "100%")
+                .attr("y2", "0%");
+                linearGradient.selectAll("stop")
+                .data( scale.range())
+                .enter().append("stop")
+                .attr("stop-opacity", 0.7)
+                .attr("offset", function(d,i) { return i/(scale.range().length-1) ; })
+                .attr("stop-color", function(d) { return d; });
+            } else {
+                //pop
+                linearGradient = defs.append("linearGradient")
+                .attr("id", "linear-gradientBlue");
+                linearGradient
+                .attr("x1", "0%")
+                .attr("y1", "0%")
+                .attr("x2", "100%")
+                .attr("y2", "0%");
+                linearGradient.selectAll("stop")
+                .data( scale.range())
+                .enter().append("stop")
+                .attr("stop-opacity", 0.7)
+                .attr("offset", function(d,i) { return i/(scale.range().length-1) ; })
+                .attr("stop-color", function(d) { return d; });
+            }
+
+
+            var lgd_x = 3*width/4 - width/4;
+            var lgd_y = 0.05*height;
+            var lgd_width = width/2.5;
+            svg.append("rect")
+            .attr("width", lgd_width)
+            .attr("height", 20)
+            .attr("x", lgd_x)
+            .attr("y", lgd_y)
+            .style("stroke", "#ccc")
+            .style("fill", function() {
+                if (pop == 0)
+                    return "url(#linear-gradientRed)";
+                else
+                    return "url(#linear-gradientBlue)";
+            });
+            // [0.4027402, 1.991375, 4.297711, 6.685948, 39.8618340]
+
+            svg.append("text")
+            .attr("text-anchor", "middle")
+            .style("font-family", "Yeseva One")
+            .attr("x", lgd_x)
+            .attr("y", lgd_y + 38).style("fill",scale.range()[4]).text(scale.domain()[0].toFixed(scale == percentScale ? 1 : 0));
+            svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "baseline")
+            .style("font-family", "Merriweather")
+            .attr("x", lgd_x)
+            .style("font-size", "0.75em")
+            .attr("y", lgd_y + 50).style("fill",scale.range()[4]).text("[ min ]");
+
+            svg.append("text")
+            .attr("x", lgd_x + lgd_width / 4)
+            .attr("text-anchor", "middle")
+            .style("font-family", "Yeseva One")
+            .attr("y", lgd_y + 38).style("fill",scale.range()[4]).text(scale.domain()[1].toFixed(scale == percentScale ? 1 : 0));
+            svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "baseline")
+            .style("font-family", "Merriweather")
+            .attr("x", lgd_x + lgd_width / 4)
+            .style("font-size", "0.75em")
+            .attr("y", lgd_y + 50).style("fill",scale.range()[4]).text("[ q1 ]");
+
+            svg.append("text")
+            .attr("x", lgd_x + lgd_width / 2)
+            .attr("text-anchor", "middle")
+            .style("font-family", "Yeseva One")
+            .attr("y", lgd_y + 38).style("fill",scale.range()[4]).text(scale.domain()[2].toFixed(scale == percentScale ? 1 : 0));
+            svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "baseline")
+            .style("font-family", "Merriweather")
+            .attr("x", lgd_x + lgd_width / 2)
+            .style("font-size", "0.75em")
+            .attr("y", lgd_y + 50).style("fill",scale.range()[4]).text("[ median ]");
+
+            svg.append("text")
+            .attr("x", lgd_x + 3 * lgd_width / 4)
+            .attr("text-anchor", "middle")
+            .style("font-family", "Yeseva One")
+            .attr("y", lgd_y + 38).style("fill",scale.range()[4]).text(scale.domain()[3].toFixed(scale == percentScale ? 1 : 0));
+            svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "baseline")
+            .style("font-family", "Merriweather")
+            .attr("x", lgd_x + 3 * lgd_width / 4)
+            .style("font-size", "0.75em")
+            .attr("y", lgd_y + 50).style("fill",scale.range()[4]).text("[ q3 ]");
+
+            svg.append("text")
+            .attr("x", lgd_x + lgd_width)
+            .attr("text-anchor", "middle")
+            .style("font-family", "Yeseva One")
+            .attr("y", lgd_y + 38).style("fill",scale.range()[4]).text(scale.domain()[4].toFixed(0));
+            svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "baseline")
+            .style("font-family", "Merriweather")
+            .attr("x", lgd_x + lgd_width)
+            .style("font-size", "0.75em")
+            .attr("y", lgd_y + 50).style("fill",scale.range()[4]).text("[ max ]");
+        }
+
+
+
+</script>
+<script>
+    var svgRace = d3.select("#raceplot");
+
+
+
+        var height = document.getElementById("svgRace").clientHeight * 1.4;
+        var width = document.getElementById("svgRace").clientWidth;
+
+        svgRace
+        .attr("width", width)
+        .attr("height", height);
+
+        //scale
+        var xScaleRace = d3.scaleLinear().domain([0, 0.4]).range([150, 0.9* width]);
+        var yScaleRace = d3.scaleLinear().domain([0, 19]).range([10, height]);
+
+        d3.queue()
+        .defer(d3.csv, "race.csv", parseRow)
+        .await(callbackForRace);
+
+        //draw axis
+
+        function callbackForRace(error, rawData) {
+            drawBar(xScaleRace, yScaleRace, rawData);
+        }
+
+        function drawBar(xscale, yscale, data) {
+            data.forEach(function(d, i) {
+                svgRace.append("text")
+                .text(d.Name)
+                .attr("x", xscale(0) - 10)
+                .attr("y", yscale(i) + 10)
+                .attr("text-anchor", "end")
+                .attr("dominant-baseline", "hanging")
+                .attr("font-family", "Merriweather");
+
+                svgRace.append("rect")
+                .attr("x", xscale(0))
+                .attr("y", yscale(i) + 5)
+                .attr("width", xscale(d.percentage) - xscale(0))
+                .attr("height", height * (1/25))
+                .attr("fill", d.Name == "Male" || d.Name == "Female" ? 'rgb(230,230,255)' :  (d.Name == "15 to 35" || d.Name == "36 to 65" || d.Name =="66 to 120"?'rgb(153,153,255)':'rgb(77,77,255)'))
+                .attr("fill-opacity", 0.7)
+                .attr("stroke", "blue")
+                .attr("stroke-width", 1);
+
+                svgRace.append("text")
+                .text(Number(d.percentage).toFixed(2))
+                .attr("x", xscale(d.percentage) + 10)
+                .attr("y", yscale(i) + 8)
+                .attr("dominant-baseline", "hanging")
+                .attr("font-family", "Merriweather");
+            });
+        }
+
+
+</script>
+
+<script>
+    //draw bundle
+    var svgbundle = d3.selectAll(".bundle");
+
+    function redrawBundle() {
+        //clear everything in svg
+        svgbundle.selectAll("*").remove();
+
+        var height = document.getElementById("car").clientHeight * 0.3;
+        var width = height;
+
+        svgbundle
+        .attr("width", width)
+        .attr("height", height);
+
+        //scale
+        var scalebundle = d3.scaleLinear().domain([0, 10]).range([10, width - 10]);
+
+        //resource: https://stackoverflow.com/questions/9879258/how-can-i-generate-random-points-on-a-circles-circumference-in-javascript
+        function getpoints() {
+            var randompoints = [];
+            for (var i = 0; i < 40; i++) {
+                var angle = Math.random() * Math.PI*2;
+                var radius = Math.random() * 3;
+                var x = Math.cos(angle) * radius;
+                var y = Math.sin(angle) * radius;
+                randompoints.push([scalebundle(x), scalebundle(y)]);
+            }
+            return randompoints;
+        }
+
+        var line = d3.line()
+        .curve(d3.curveCardinal);
+        var center = 0.5 * width;
+
+        svgbundle
+        .append("path")
+        .attr("d", function() {
+            return line(getpoints());
+        })
+        .attr("stroke", "#CD4A4C")
+        .attr("opacity", 0.6)
+        .attr("stroke-width", 2)
+        .attr("fill", "none")
+        .attr("transform", "translate(" + center + ", " + center + ")");
+
+    }
+
+    redrawBundle();
+
+    function redrawEverything() {
+
+        redrawBundle();
+
+    }
+
+    // Redraw based on the new size whenever the browser window is resized.
+    window.addEventListener("resize", redrawEverything);
+
+</script>
